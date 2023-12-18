@@ -1,4 +1,3 @@
-import MagicString from "magic-string"
 import fs from "fs"
 
 const virtualSceneFiles = new Map()
@@ -19,6 +18,9 @@ export default function () {
     },
     resolveId(id) {
       if (config.mode === "production") return
+
+      // move real scene file to virtual scene
+      // so we can replace it with a proxy scene
       if (isVirtualScene(id)) {
         virtualSceneFiles.set(
           id,
@@ -31,20 +33,18 @@ export default function () {
       if (config.mode === "production") return
 
       if (isSceneFilepath(id)) {
-        // return actual scene
+        // return actual scene (as a virtual file)
         if (isVirtualScene(id)) {
           return virtualSceneFiles.get(id)
         }
         // return proxy scene
         else {
-          // prepend .__virtual to the file extension
-          const filePath = getSceneImportPath(id)
+          // get import path to scene
+          const filePath = getVirtualSceneImportPath(id)
 
           return /* js */ `\
             import { hmrData } from 'vite-plugin-excalibur-hmr' 
             import { default as Scene } from "${filePath}"
-
-            export const __hot_id = ${JSON.stringify(id)}
             
             class ProxyScene extends Scene {
               static __hot_id = ${JSON.stringify(id)}
@@ -73,16 +73,16 @@ export default function () {
                   
                   try {
                     for (const [name, instance] of Object.entries(engine.scenes)) {
-                      if (instance.constructor.__hot_id === mod.__hot_id) {                          
+                      if (instance.constructor.__hot_id && instance.constructor.__hot_id === mod.default.__hot_id) {                          
                         engine.removeScene(name)
                         
                         const args = hmrData.sceneConstructorArgs[name] ?? []              
                         const newSceneInstance = new mod.default(...args)          
-                        engine.addScene(name, newSceneInstance) 
+                        engine.addScene(name, newSceneInstance)                         
                       }
                     }
                     
-                    const shouldReloadCurrentScene = currentScene?.constructor.__hot_id === mod.__hot_id                  
+                    const shouldReloadCurrentScene = currentScene?.constructor.__hot_id === mod.default.__hot_id                    
                     if (shouldReloadCurrentScene) {
                       engine.goToScene(name, ...goToSceneArgs)
                     }
@@ -93,7 +93,7 @@ export default function () {
                 }
               })
             }
-            `
+`
         }
       }
     },
@@ -120,7 +120,7 @@ function isVirtualScene(id) {
   return id.includes(".__virtual__")
 }
 
-function getSceneImportPath(id) {
+function getVirtualSceneImportPath(id) {
   return (
     id.split(".").slice(0, -1).join(".") +
     ".__virtual__." +
