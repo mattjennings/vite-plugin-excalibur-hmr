@@ -1,0 +1,37 @@
+{
+  "name": "vite-plugin-excalibur-hmr",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "files": [
+    "src"
+  ],
+  "exports": {
+    ".": "./src/index.js",
+    "./plugin": "./src/plugin.js"
+  },
+  "typesVersions": {
+    ">4.0": {
+      ".": [
+        "./src/index.d.ts"
+      ],
+      "./plugin": [
+        "./src/plugin.d.ts"
+      ]
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "magic-string": "^0.30.5"
+  },
+  "devDependencies": {
+    "excalibur": "^0.28.3",
+    "vite": "^5.0.0"
+  },
+  "peerDependencies": {
+    "excalibur": "^0.28.3",
+    "vite": ">=5"
+  }
+}
