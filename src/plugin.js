@@ -102,7 +102,9 @@ export default function () {
       if (isSceneFilepath(ctx.file) && !isVirtualScene(ctx.file)) {
         const modules = [
           ...ctx.modules,
-          ctx.server.moduleGraph.getModuleById(getSceneImportPath(ctx.file)),
+          ctx.server.moduleGraph.getModuleById(
+            getVirtualSceneImportPath(ctx.file)
+          ),
         ]
         return modules
       }
