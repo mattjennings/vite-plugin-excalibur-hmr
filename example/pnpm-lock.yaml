@@ -465,7 +465,7 @@ packages:
     name: vite-plugin-excalibur-hmr
     peerDependencies:
       excalibur: ^0.28.3
-      vite: '>=5'
+      vite: '>=4'
     dependencies:
       excalibur: 0.28.3
       magic-string: 0.30.5

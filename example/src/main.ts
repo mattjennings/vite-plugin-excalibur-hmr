@@ -1,5 +1,5 @@
 import * as ex from "excalibur"
-import { hot } from "vite-plugin-excalibur-hmr"
+import hot from "vite-plugin-excalibur-hmr/hot"
 import { loader } from "./resources"
 import Level from "./scenes/level"
 import Level2 from "./scenes/level2"
@@ -13,7 +13,9 @@ const engine = new ex.Engine({
   antialiasing: false,
 })
 
-hot(engine)
+if (import.meta.env.DEV) {
+  hot(engine)
+}
 
 // Create collision groups for the game
 ex.CollisionGroupManager.create("player")

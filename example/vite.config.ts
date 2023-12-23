@@ -1,9 +1,9 @@
 import { defineConfig } from "vite"
-import plugin from "vite-plugin-excalibur-hmr/plugin"
+import hmr from "vite-plugin-excalibur-hmr"
 
 export default defineConfig({
   optimizeDeps: {
     exclude: ["excalibur", "vite-plugin-excalibur-hmr"],
   },
-  plugins: [plugin()],
+  plugins: [hmr()],
 })
